@@ -65,3 +65,61 @@ GET http://127.0.0.1:8000/rabbitmq/messages
 Accept: application/json
 
 ###
+
+# Task System Operations
+
+# Start worker consumers (default 3 workers)
+POST http://127.0.0.1:8000/tasks/workers/start
+Content-Type: application/json
+Accept: application/json
+
+{
+  "num_workers": 3
+}
+
+###
+
+# Submit a task with low complexity
+POST http://127.0.0.1:8000/tasks/submit
+Content-Type: application/json
+Accept: application/json
+
+{
+  "complexity": 1,
+  "data": "This is a simple task",
+  "type": "processing"
+}
+
+###
+
+# Submit a task with medium complexity
+POST http://127.0.0.1:8000/tasks/submit
+Content-Type: application/json
+Accept: application/json
+
+{
+  "complexity": 3,
+  "data": "This is a medium complexity task",
+  "type": "analysis"
+}
+
+###
+
+# Submit a task with high complexity
+POST http://127.0.0.1:8000/tasks/submit
+Content-Type: application/json
+Accept: application/json
+
+{
+  "complexity": 5,
+  "data": "This is a complex task",
+  "type": "calculation"
+}
+
+###
+
+# Get all task results
+GET http://127.0.0.1:8000/tasks/results
+Accept: application/json
+
+###

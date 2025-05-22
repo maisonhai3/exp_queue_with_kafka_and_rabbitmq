@@ -43,7 +43,7 @@ Message queues are a powerful way to decouple components in a distributed system
          ZOOKEEPER_TICK_TIME: 2000
        ports:
          - "2181:2181"
-       
+
      kafka:
        image: confluentinc/cp-kafka:latest
        depends_on:
@@ -55,7 +55,7 @@ Message queues are a powerful way to decouple components in a distributed system
          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-       
+
      rabbitmq:
        image: rabbitmq:3-management
        ports:
@@ -78,7 +78,7 @@ The API provides several endpoints to interact with Kafka and RabbitMQ:
    ```
    POST /kafka/send
    Content-Type: application/json
-   
+
    {
      "message": "Hello Kafka!",
      "timestamp": "2023-01-01T12:00:00",
@@ -102,7 +102,7 @@ The API provides several endpoints to interact with Kafka and RabbitMQ:
    ```
    POST /rabbitmq/send
    Content-Type: application/json
-   
+
    {
      "message": "Hello RabbitMQ!",
      "timestamp": "2023-01-01T12:00:00",
@@ -119,6 +119,50 @@ The API provides several endpoints to interact with Kafka and RabbitMQ:
    ```
    GET /rabbitmq/messages
    ```
+
+### RabbitMQ Workload Distribution
+
+This project also demonstrates how RabbitMQ can be used to distribute workload among multiple workers. This is a common use case for message queues in distributed systems.
+
+1. Start worker consumers (default 3 workers):
+   ```
+   POST /tasks/workers/start
+   Content-Type: application/json
+
+   {
+     "num_workers": 3
+   }
+   ```
+
+2. Submit tasks with different complexity levels:
+   ```
+   POST /tasks/submit
+   Content-Type: application/json
+
+   {
+     "complexity": 3,
+     "data": "This is a task that needs processing",
+     "type": "analysis"
+   }
+   ```
+
+   The `complexity` field determines how long the task will take to process (higher values mean longer processing times).
+
+3. Get all task results:
+   ```
+   GET /tasks/results
+   ```
+
+   This will show which worker processed each task and how long it took.
+
+#### How Workload Distribution Works
+
+1. **Task Queue**: Tasks are sent to a dedicated RabbitMQ queue.
+2. **Multiple Workers**: Multiple worker consumers process tasks from the queue.
+3. **Fair Dispatch**: RabbitMQ uses a round-robin algorithm to distribute tasks, but with the `prefetch_count=1` setting, it won't give a new task to a worker until it has finished its current task.
+4. **Acknowledgments**: Workers acknowledge tasks only after they've been processed, ensuring that if a worker crashes, the task will be reassigned to another worker.
+
+This demonstrates how RabbitMQ can be used to distribute work among multiple consumers, allowing for parallel processing and improved throughput.
 
 ## Understanding Message Queues
 
@@ -151,9 +195,23 @@ The API provides several endpoints to interact with Kafka and RabbitMQ:
 
 ## Project Structure
 
-- `main.py`: FastAPI application with Kafka and RabbitMQ integration
+- `main.py`: Main FastAPI application that imports and uses the modules
+- `app/`: Directory containing the application code
+  - `common/`: Common utilities and configuration
+    - `config.py`: Shared configuration loaded from environment variables
+    - `storage.py`: In-memory message storage
+  - `kafka/`: Kafka-related functionality
+    - `config.py`: Kafka-specific configuration
+    - `client.py`: Kafka producer and consumer implementation
+    - `routes.py`: Kafka API endpoints
+  - `rabbitmq/`: RabbitMQ-related functionality
+    - `config.py`: RabbitMQ-specific configuration
+    - `client.py`: RabbitMQ producer and consumer implementation
+    - `tasks.py`: RabbitMQ task system for workload distribution
+    - `routes.py`: RabbitMQ API endpoints
 - `requirements.txt`: Project dependencies
 - `test_main.http`: HTTP request examples for testing the API
+- `docker-compose.yml`: Docker configuration for running Kafka and RabbitMQ
 
 ## Learning Resources
 
