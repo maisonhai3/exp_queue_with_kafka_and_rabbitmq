@@ -1,0 +1,67 @@
+# Queue Experiment API Test Endpoints
+
+# Get API information
+GET http://127.0.0.1:8000/
+Accept: application/json
+
+###
+
+# Basic hello endpoint
+GET http://127.0.0.1:8000/hello/User
+Accept: application/json
+
+###
+
+# Kafka Operations
+
+# Send a message to Kafka
+POST http://127.0.0.1:8000/kafka/send
+Content-Type: application/json
+Accept: application/json
+
+{
+  "message": "Hello Kafka!",
+  "timestamp": "{{$timestamp}}",
+  "source": "test_client"
+}
+
+###
+
+# Start Kafka consumer (background task)
+POST http://127.0.0.1:8000/kafka/consume
+Accept: application/json
+
+###
+
+# Get all messages received from Kafka
+GET http://127.0.0.1:8000/kafka/messages
+Accept: application/json
+
+###
+
+# RabbitMQ Operations
+
+# Send a message to RabbitMQ
+POST http://127.0.0.1:8000/rabbitmq/send
+Content-Type: application/json
+Accept: application/json
+
+{
+  "message": "Hello RabbitMQ!",
+  "timestamp": "{{$timestamp}}",
+  "source": "test_client"
+}
+
+###
+
+# Start RabbitMQ consumer (background task)
+POST http://127.0.0.1:8000/rabbitmq/consume
+Accept: application/json
+
+###
+
+# Get all messages received from RabbitMQ
+GET http://127.0.0.1:8000/rabbitmq/messages
+Accept: application/json
+
+###
