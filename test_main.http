@@ -123,3 +123,59 @@ GET http://127.0.0.1:8000/tasks/results
 Accept: application/json
 
 ###
+
+# Publish/Subscribe Operations
+
+# Create a subscriber (with auto-generated ID)
+POST http://127.0.0.1:8000/pubsub/subscribers
+Content-Type: application/json
+Accept: application/json
+
+{
+  "subscriber_id": null
+}
+
+###
+
+# Create a subscriber with a specific ID
+POST http://127.0.0.1:8000/pubsub/subscribers
+Content-Type: application/json
+Accept: application/json
+
+{
+  "subscriber_id": "subscriber-1"
+}
+
+###
+
+# Start a subscriber consumer
+POST http://127.0.0.1:8000/pubsub/subscribers/subscriber-1/consume
+Accept: application/json
+
+###
+
+# Publish a message to all subscribers
+POST http://127.0.0.1:8000/pubsub/publish
+Content-Type: application/json
+Accept: application/json
+
+{
+  "message": "Hello Subscribers!",
+  "timestamp": "{{$timestamp}}",
+  "source": "test_client",
+  "importance": "high"
+}
+
+###
+
+# Get messages for a specific subscriber
+GET http://127.0.0.1:8000/pubsub/subscribers/subscriber-1/messages
+Accept: application/json
+
+###
+
+# Get all subscribers
+GET http://127.0.0.1:8000/pubsub/subscribers
+Accept: application/json
+
+###

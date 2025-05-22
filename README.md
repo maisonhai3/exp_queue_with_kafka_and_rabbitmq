@@ -164,6 +164,60 @@ This project also demonstrates how RabbitMQ can be used to distribute workload a
 
 This demonstrates how RabbitMQ can be used to distribute work among multiple consumers, allowing for parallel processing and improved throughput.
 
+### RabbitMQ Publish/Subscribe
+
+This project also demonstrates the Publish/Subscribe pattern using RabbitMQ exchanges and bindings. This pattern allows a message to be broadcast to multiple consumers.
+
+1. Create a subscriber:
+   ```
+   POST /pubsub/subscribers
+   Content-Type: application/json
+
+   {
+     "subscriber_id": "subscriber-1"
+   }
+   ```
+
+   If `subscriber_id` is not provided, a random UUID will be generated.
+
+2. Start a subscriber consumer:
+   ```
+   POST /pubsub/subscribers/subscriber-1/consume
+   ```
+
+3. Publish a message to all subscribers:
+   ```
+   POST /pubsub/publish
+   Content-Type: application/json
+
+   {
+     "message": "Hello Subscribers!",
+     "timestamp": "2023-01-01T12:00:00",
+     "source": "test_client",
+     "importance": "high"
+   }
+   ```
+
+4. Get messages for a specific subscriber:
+   ```
+   GET /pubsub/subscribers/subscriber-1/messages
+   ```
+
+5. Get all subscribers:
+   ```
+   GET /pubsub/subscribers
+   ```
+
+#### How Publish/Subscribe Works
+
+1. **Exchange**: Messages are sent to an exchange instead of directly to a queue.
+2. **Fanout Exchange**: A fanout exchange broadcasts all messages it receives to all queues bound to it.
+3. **Queue Binding**: Each subscriber has a unique queue that is bound to the exchange.
+4. **Message Broadcast**: When a message is published to the exchange, it is delivered to all bound queues.
+5. **Subscriber Consumption**: Each subscriber consumes messages from its own queue.
+
+This demonstrates how RabbitMQ can be used to implement the Publish/Subscribe pattern, allowing a message to be broadcast to multiple consumers.
+
 ## Understanding Message Queues
 
 ### Kafka vs RabbitMQ
@@ -208,6 +262,7 @@ This demonstrates how RabbitMQ can be used to distribute work among multiple con
     - `config.py`: RabbitMQ-specific configuration
     - `client.py`: RabbitMQ producer and consumer implementation
     - `tasks.py`: RabbitMQ task system for workload distribution
+    - `pubsub.py`: RabbitMQ publish/subscribe implementation with exchanges and bindings
     - `routes.py`: RabbitMQ API endpoints
 - `requirements.txt`: Project dependencies
 - `test_main.http`: HTTP request examples for testing the API

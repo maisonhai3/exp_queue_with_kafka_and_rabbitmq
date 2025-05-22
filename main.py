@@ -22,6 +22,13 @@ async def root():
             "submit_task": "/tasks/submit",
             "start_workers": "/tasks/workers/start",
             "get_results": "/tasks/results"
+        },
+        "pubsub_endpoints": {
+            "publish": "/pubsub/publish",
+            "create_subscriber": "/pubsub/subscribers",
+            "start_subscriber": "/pubsub/subscribers/{subscriber_id}/consume",
+            "get_subscriber_messages": "/pubsub/subscribers/{subscriber_id}/messages",
+            "get_all_subscribers": "/pubsub/subscribers"
         }
     }
 
